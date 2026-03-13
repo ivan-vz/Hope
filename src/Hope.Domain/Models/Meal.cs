@@ -6,6 +6,7 @@
         public string Name { get; private set; } = name;
         public string Description { get; private set; } = description;
         public decimal Price { get; private set; } = price;
+        public string? ImageUrl { get; set; }
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
 
         // Navigation Properties
