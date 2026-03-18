@@ -1,17 +1,25 @@
 ﻿namespace Hope.Domain.Models
 {
-    public class Order(decimal total, User user, ICollection<Meal> meals, bool delivery)
+    public class Order
     {
         public Guid Id { get; init; } = Guid.NewGuid();
-        public decimal Total { get; init; } = total;
+        public decimal Total { get; init; }
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
-        public string? DeliverTo { get; init; } = delivery ? user.Address : null;
+        public string? DeliverTo { get; init; }
         public DateTimeOffset? Delivered { get; private set; } = null;
 
         // Navigation Properties
-        public Guid UserId { get; init; } = user.Id;
-        public User User { get; init; } = user;
+        public Guid UserId { get; init; }
+        public User User { get; init; } = null!;
+        public ICollection<Meal> Meals { get; init; } = [];
 
-        public ICollection<Meal> Meals { get; init; } = meals;
+        private Order() {}
+
+        public Order(decimal total, Guid userId, bool delivery, string? address)
+        {
+            Total = total;
+            UserId = userId;
+            DeliverTo = delivery ? address : null;
+        }
     }
 }

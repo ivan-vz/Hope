@@ -1,6 +1,6 @@
 ﻿namespace Hope.Domain.Models
 {
-    public class Meal(string name, string description, decimal price, ICollection<Tag> tags)
+    public class Meal(string name, string description, decimal price)
     {
         public Guid Id { get; init; } = Guid.NewGuid();
         public string Name { get; private set; } = name;
@@ -11,6 +11,6 @@
 
         // Navigation Properties
         public ICollection<Menu> Menu { get; set; } = [];
-        public ICollection<Tag> Tags { get; set; } = tags;
+        public ICollection<Tag> Tags { get; set; } = [];
     }
 }
