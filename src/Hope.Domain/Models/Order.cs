@@ -7,6 +7,8 @@
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
         public string? DeliverTo { get; init; }
         public DateTimeOffset? Delivered { get; private set; } = null;
+        public DateOnly To { get; init; }
+        public DateTimeOffset? LastUpdate { get; private set; }
 
         // Navigation Properties
         public Guid UserId { get; init; }
@@ -15,11 +17,12 @@
 
         private Order() {}
 
-        public Order(decimal total, Guid userId, bool delivery, string? address)
+        public Order(decimal total, Guid userId, bool delivery, string? address, DateOnly to)
         {
             Total = total;
             UserId = userId;
             DeliverTo = delivery ? address : null;
+            To = to;
         }
     }
 }

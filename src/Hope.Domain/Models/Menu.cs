@@ -4,9 +4,10 @@
     {
         public Guid Id { get; init; } = Guid.NewGuid();
         public string Name { get; set; } = name;
+        public ICollection<DateOnly> AvailableMonths { get; set; } = [];
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
 
         // Navigation Properties
-        public ICollection<Meal> Meals { get; private set; } = [];
+        public ICollection<Meal> Meals { get; set; } = [];
     }
 }
