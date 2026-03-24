@@ -7,24 +7,29 @@ namespace Hope.Infrastructure.Repository
 {
     public class MenuRepository(ApplicationDbContext context) : IMenuRepository
     {
-        public async Task AddAsync(Menu menu) => await context.Menus.AddAsync(menu);
+        public void Add(Menu menu) => context.Menus.Add(menu);
 
-        public async Task<IReadOnlyList<Menu>> GetAllAsync() => await context.Menus.ToListAsync();
+        public async Task<IReadOnlyList<Menu>> GetAllAsync(CancellationToken ct) => await context.Menus.Include(x => x.Meals).ToListAsync(ct);
 
-        public async Task<IReadOnlyList<Menu>> GetAllByDateAsync(DateOnly date) => await context.Menus.Where(x => x.AvailableMonths.Contains(date)).ToListAsync();
+        public async Task<IReadOnlyList<Menu>> GetAllByDateAsync(DateOnly date, CancellationToken ct) => await context.Menus
+            .Include(x => x.Meals)
+            .Where(x => x.AvailableMonths
+            .Contains(date))
+            .ToListAsync(ct);
 
-        public async Task<IReadOnlyList<Menu>> GetByTagsAsync(IEnumerable<string> tags) => await context.Menus
+        public async Task<IReadOnlyList<Menu>> GetByTagsAsync(IEnumerable<string> tags, CancellationToken ct) => await context.Menus
+            .Include(x => x.Meals)
             .Where(x => x.Meals
             .Any(m => m.Tags
             .Any(t => tags.Contains(t.Name))))
-            .ToListAsync();
+            .ToListAsync(ct);
 
-        public async Task<Menu?> GetByIdAsync(Guid id) => await context.Menus.SingleOrDefaultAsync(x => x.Id == id);
+        public async Task<Menu?> GetByIdAsync(Guid id, CancellationToken ct) => await context.Menus.Include(x => x.Meals).SingleOrDefaultAsync(x => x.Id == id, ct);
 
-        public void UpdateAsync(Menu menu)
+        public async Task<bool> ExistsByName(string name, CancellationToken ct)
         {
-            context.Menus.Attach(menu);
-            context.Menus.Entry(menu).State = EntityState.Modified;
+            var normalized = name.Trim().ToLowerInvariant();
+            return await context.Menus.AnyAsync(x => x.Name == normalized, ct);
         }
     }
 }

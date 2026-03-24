@@ -7,28 +7,28 @@ namespace Hope.Infrastructure.Repository
 {
     internal class MealRepository(ApplicationDbContext context) : IMealRepository
     {
-        // Meals
-        public async Task AddAsync(Meal meal) => await context.Meals.AddAsync(meal);
+        public void Add(Meal meal) => context.Meals.Add(meal);
 
-        public async Task<IReadOnlyList<Meal>> GetAllAsync() => await context.Meals.ToListAsync();
-
-        public async Task<Meal?> GetByIdAsync(Guid id) => await context.Meals.SingleOrDefaultAsync(x => x.Id == id);
-
-        public async Task<IReadOnlyList<Meal?>> GetByTagsAsync(IEnumerable<string> tags) => await context.Meals
-            .Where(x => tags
-            .All(tag => x.Tags
-            .Any(t => t.Name == tag)))
-            .ToListAsync();
-
-        public void UpdateAsync(Meal meal)
+        public async Task<bool> ExistsByName(string name, CancellationToken ct)
         {
-            context.Meals.Attach(meal);
-            context.Meals.Entry(meal).State = EntityState.Modified;
+            var normalized = name.Trim().ToLowerInvariant();
+            return await context.Meals.AnyAsync(x => x.Name.ToLower() == normalized, ct);
         }
 
-        // Tags
-        public async Task AddTagAsync(Tag tag) => await context.Tags.AddAsync(tag);
+        public async Task<IReadOnlyList<Meal>> GetAllAsync(CancellationToken ct) => await context.Meals.Include(x => x.Tags).ToListAsync(ct);
 
-        public async Task<IReadOnlyList<Tag>> GetAllTagsAsync() => await context.Tags.ToListAsync();
+        public async Task<Meal?> GetByIdAsync(Guid id, CancellationToken ct) => await context.Meals.Include(x => x.Tags).SingleOrDefaultAsync(x => x.Id == id, ct);
+
+        public async Task<IReadOnlyList<Meal>> GetByTagsAsync(IEnumerable<string> tags, CancellationToken ct)
+        {
+            var tagList = tags.ToList();
+
+            return await context.Meals
+            .Include(x => x.Tags)
+            .Where(x => tags
+            .Count(t => tagList
+            .Contains(t)) == tagList.Count)
+            .ToListAsync(ct);
+        }
     }
 }

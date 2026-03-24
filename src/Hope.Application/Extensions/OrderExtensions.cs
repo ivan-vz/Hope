@@ -15,7 +15,7 @@ namespace Hope.Application.Extensions
                 DeliverTo = order.DeliverTo,
                 Delivered = order.Delivered,
                 User = order.User.ToDto(),
-                Meals = [.. order.Meals.Select(x => x.ToDto())]
+                Meals = [.. order.Meals.Select(x => x.Meal.ToDto())]
             };
         }
     }

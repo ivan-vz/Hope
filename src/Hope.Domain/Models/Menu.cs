@@ -6,6 +6,7 @@
         public string Name { get; set; } = name;
         public ICollection<DateOnly> AvailableMonths { get; set; } = [];
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
+        public bool IsDeleted { get; set; } = false;
 
         // Navigation Properties
         public ICollection<Meal> Meals { get; set; } = [];

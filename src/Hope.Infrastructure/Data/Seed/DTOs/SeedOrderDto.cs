@@ -6,6 +6,6 @@
         public required string DeliverTo { get; init; }
         public int DaysUntilDelivery { get; init; }
         public required string UserEmail { get; init; }
-        public required ICollection<string> Meals { get; init; }
+        public required ICollection<SeedMealItem> Meals { get; init; }
     }
 }

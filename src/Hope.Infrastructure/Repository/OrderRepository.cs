@@ -7,18 +7,15 @@ namespace Hope.Infrastructure.Repository
 {
     internal class OrderRepository(ApplicationDbContext context) : IOrderRepository
     {
-        public async Task AddAsync(Order order) => await context.Orders.AddAsync(order);
+        public void Add(Order order) => context.Orders.Add(order);
 
-        public async Task<IReadOnlyList<Order>> GetAllByDateAsync(DateOnly date) => await context.Orders.Where(x => x.To == date).ToListAsync();
+        public async Task<IReadOnlyList<Order>> GetAllByDateAsync(DateOnly date, CancellationToken ct) => await context.Orders.Where(x => x.To == date).ToListAsync(ct);
 
-        public async Task<IReadOnlyList<Order>> GetAllByUserAsync(Guid userId) => await context.Orders.Where(x => x.UserId == userId).ToListAsync();
+        public async Task<IReadOnlyList<Order>> GetAllByUserAsync(Guid userId, CancellationToken ct) => await context.Orders.Where(x => x.UserId == userId).ToListAsync(ct);
 
-        public async Task<Order?> GetByIdAsync(Guid id) => await context.Orders.SingleOrDefaultAsync(x => x.Id == id);
-
-        public void UpdateAsync(Order order)
-        {
-            context.Orders.Attach(order);
-            context.Orders.Entry(order).State = EntityState.Modified;
-        }
+        public async Task<Order?> GetByIdAsync(Guid id, CancellationToken ct) => await context.Orders
+            .Include(x => x.User)
+            .Include(x => x.Meals)
+            .SingleOrDefaultAsync(x => x.Id == id, ct);
     }
 }

@@ -24,6 +24,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 //APPLICATION
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<UserInsertDtoValidator>(); //Usando la ubicacion UserInsertDtoValidator registra automaticamente el resto de validadores
 

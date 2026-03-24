@@ -1,4 +1,5 @@
 ﻿using Hope.Domain.Models;
+using Hope.Domain.Models.Auxiliary;
 using Hope.Infrastructure.Data.Seed.DTOs;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -167,16 +168,25 @@ namespace Hope.Infrastructure.Data.Seed
                 
                 var order = new Order(od.Total, user.Id, od.DeliverTo, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(od.DaysUntilDelivery)));
 
-                foreach (var mealName in od.Meals)
+                foreach (var mealItem in od.Meals)
                 {
-                    var meal = meals.SingleOrDefault(x => x.Name == mealName);
+                    var meal = meals.SingleOrDefault(x => x.Name == mealItem.Name);
                     if (meal is null)
                     {
-                        Console.WriteLine($"Meal '{mealName}' not found for order");
+                        Console.WriteLine($"Meal '{mealItem.Name}' not found for order");
                         continue;
                     }
 
-                    order.Meals.Add(meal);
+                    var orderMeal = new OrderMeal 
+                    {
+                        Quantity = mealItem.Quantity,
+                        MealId = meal.Id,
+                        Meal = meal,
+                        OrderId = order.Id,
+                        Order = order
+                    };
+
+                    order.Meals.Add(orderMeal);
                 }
 
                 context.Orders.Add(order);

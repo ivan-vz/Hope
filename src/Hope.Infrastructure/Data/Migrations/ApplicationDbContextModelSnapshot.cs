@@ -22,6 +22,54 @@ namespace Hope.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.MealMenu", b =>
+                {
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MealId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MenuId", "MealId");
+
+                    b.HasIndex("MealId");
+
+                    b.ToTable("MealMenu");
+                });
+
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.MealTag", b =>
+                {
+                    b.Property<Guid>("MealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("MealId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("MealTag");
+                });
+
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.OrderMeal", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("MealId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OrderId", "MealId");
+
+                    b.HasIndex("MealId");
+
+                    b.ToTable("OrdersMeals");
+                });
+
             modelBuilder.Entity("Hope.Domain.Models.Meal", b =>
                 {
                     b.Property<Guid>("Id")
@@ -33,24 +81,31 @@ namespace Hope.Infrastructure.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("OrderId")
-                        .HasColumnType("uuid");
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Meals");
                 });
@@ -68,11 +123,20 @@ namespace Hope.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Menus");
                 });
@@ -87,10 +151,14 @@ namespace Hope.Infrastructure.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeliverTo")
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTimeOffset?>("Delivered")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LastUpdate")
                         .HasColumnType("timestamp with time zone");
@@ -99,12 +167,17 @@ namespace Hope.Infrastructure.Data.Migrations
                         .HasColumnType("date");
 
                     b.Property<decimal>("Total")
-                        .HasColumnType("numeric");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsCancelled");
+
+                    b.HasIndex("To");
 
                     b.HasIndex("UserId");
 
@@ -120,11 +193,20 @@ namespace Hope.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tags");
                 });
@@ -136,67 +218,98 @@ namespace Hope.Infrastructure.Data.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
 
                     b.Property<string>("Surname")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("MealMenu", b =>
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.MealMenu", b =>
                 {
-                    b.Property<Guid>("MealsId")
-                        .HasColumnType("uuid");
+                    b.HasOne("Hope.Domain.Models.Meal", "Meal")
+                        .WithMany()
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Property<Guid>("MenuId")
-                        .HasColumnType("uuid");
+                    b.HasOne("Hope.Domain.Models.Menu", "Menu")
+                        .WithMany()
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasKey("MealsId", "MenuId");
+                    b.Navigation("Meal");
 
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("MealMenu");
+                    b.Navigation("Menu");
                 });
 
-            modelBuilder.Entity("MealTag", b =>
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.MealTag", b =>
                 {
-                    b.Property<Guid>("MealsId")
-                        .HasColumnType("uuid");
+                    b.HasOne("Hope.Domain.Models.Meal", "Meal")
+                        .WithMany()
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<Guid>("TagsId")
-                        .HasColumnType("uuid");
+                    b.HasOne("Hope.Domain.Models.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasKey("MealsId", "TagsId");
+                    b.Navigation("Meal");
 
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("MealTag");
+                    b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("Hope.Domain.Models.Meal", b =>
+            modelBuilder.Entity("Hope.Domain.Models.Auxiliary.OrderMeal", b =>
                 {
-                    b.HasOne("Hope.Domain.Models.Order", null)
+                    b.HasOne("Hope.Domain.Models.Meal", "Meal")
+                        .WithMany()
+                        .HasForeignKey("MealId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hope.Domain.Models.Order", "Order")
                         .WithMany("Meals")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Meal");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Hope.Domain.Models.Order", b =>
@@ -204,40 +317,10 @@ namespace Hope.Infrastructure.Data.Migrations
                     b.HasOne("Hope.Domain.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MealMenu", b =>
-                {
-                    b.HasOne("Hope.Domain.Models.Meal", null)
-                        .WithMany()
-                        .HasForeignKey("MealsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hope.Domain.Models.Menu", null)
-                        .WithMany()
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("MealTag", b =>
-                {
-                    b.HasOne("Hope.Domain.Models.Meal", null)
-                        .WithMany()
-                        .HasForeignKey("MealsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hope.Domain.Models.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hope.Domain.Models.Order", b =>

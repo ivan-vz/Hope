@@ -7,7 +7,7 @@ namespace Hope.Application.Interfaces
     public interface IUserService
     {
         public Task<(UsertDto? dt, ValidationResult validation)> CreateAsync(UserInsertDto dtInsert, CancellationToken ct);
-        public Task<IReadOnlyList<UsertDto>> GetAllAsync ();
-        public Task<UsertDto?> GetByIdAsync(Guid id);
+        public Task<IReadOnlyList<UsertDto>> GetAllAsync (CancellationToken ct);
+        public Task<UsertDto?> GetByIdAsync(Guid id, CancellationToken ct);
     }
 }

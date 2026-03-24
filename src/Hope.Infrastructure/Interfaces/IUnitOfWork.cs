@@ -6,6 +6,7 @@
         IMenuRepository MenuRepository { get; }
         IMealRepository MealRepository { get; }
         IOrderRepository OrderRepository { get; }
+        ITagRepository TagRepository { get; }
         Task<bool> Complete();
         bool HasChanges();
     }

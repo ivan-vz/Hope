@@ -2,10 +2,10 @@
 {
     public class UserInsertDto
     {
-        public required string Name { get; set; }
-        public required string Surname { get; set; }
-        public required string Email { get; set; }
-        public required string PhoneNumber { get; set; }
-        public string? Address { get; set; }
+        public required string Name { get; init; }
+        public required string Surname { get; init; }
+        public required string Email { get; init; }
+        public required string PhoneNumber { get; init; }
+        public string? Address { get; init; }
     }
 }

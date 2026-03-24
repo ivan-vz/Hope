@@ -4,11 +4,11 @@ namespace Hope.Infrastructure.Interfaces
 {
     public interface IMenuRepository
     {
-        public Task<IReadOnlyList<Menu>> GetAllAsync();
-        public Task<IReadOnlyList<Menu>> GetAllByDateAsync(DateOnly date);
-        public Task<IReadOnlyList<Menu>> GetByTagsAsync(IEnumerable<string> tags);
-        public Task<Menu?> GetByIdAsync(Guid id);
-        public Task AddAsync(Menu menu);
-        public void UpdateAsync(Menu menu);
+        public Task<IReadOnlyList<Menu>> GetAllAsync(CancellationToken ct);
+        public Task<IReadOnlyList<Menu>> GetAllByDateAsync(DateOnly date, CancellationToken ct);
+        public Task<IReadOnlyList<Menu>> GetByTagsAsync(IEnumerable<string> tags, CancellationToken ct);
+        public Task<Menu?> GetByIdAsync(Guid id, CancellationToken ct);
+        public Task<bool> ExistsByName(string name, CancellationToken ct);
+        public void Add(Menu menu);
     }
 }

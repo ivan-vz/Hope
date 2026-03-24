@@ -22,14 +22,14 @@ namespace Hope.Application.Services
 
             var instance = new User(dtInsert.Name, dtInsert.Surname, dtInsert.Email, dtInsert.PhoneNumber, dtInsert.Address);
 
-            await _uow.UserRepository.AddAsync(instance);
+            _uow.UserRepository.Add(instance);
             await _uow.Complete();
 
             return (instance.ToDto(), validation);
         }
 
-        public async Task<IReadOnlyList<UsertDto>> GetAllAsync() => [.. (await _uow.UserRepository.GetAllAsync()).Select(x => x.ToDto())];
+        public async Task<IReadOnlyList<UsertDto>> GetAllAsync(CancellationToken ct) => [.. (await _uow.UserRepository.GetAllAsync(ct)).Select(x => x.ToDto())];
 
-        public async Task<UsertDto?> GetByIdAsync(Guid id) => (await _uow.UserRepository.GetByIdAsync(id))?.ToDto();
+        public async Task<UsertDto?> GetByIdAsync(Guid id, CancellationToken ct) => (await _uow.UserRepository.GetByIdAsync(id, ct))?.ToDto();
     }
 }

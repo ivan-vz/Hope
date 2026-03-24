@@ -4,10 +4,9 @@ namespace Hope.Infrastructure.Interfaces
 {
     public interface IOrderRepository
     {
-        public Task<IReadOnlyList<Order>> GetAllByUserAsync(Guid userId);
-        public Task<IReadOnlyList<Order>> GetAllByDateAsync(DateOnly date);
-        public Task<Order?> GetByIdAsync(Guid id);
-        public Task AddAsync(Order order);
-        public void UpdateAsync(Order order);
+        public Task<IReadOnlyList<Order>> GetAllByUserAsync(Guid userId, CancellationToken ct);
+        public Task<IReadOnlyList<Order>> GetAllByDateAsync(DateOnly date, CancellationToken ct);
+        public Task<Order?> GetByIdAsync(Guid id, CancellationToken ct);
+        public void Add(Order order);
     }
 }

@@ -1,19 +1,23 @@
-﻿namespace Hope.Domain.Models
+﻿using Hope.Domain.Models.Auxiliary;
+
+namespace Hope.Domain.Models
 {
     public class Order
     {
         public Guid Id { get; init; } = Guid.NewGuid();
-        public decimal Total { get; init; }
+        public decimal Total { get; set; }
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
-        public string? DeliverTo { get; init; }
-        public DateTimeOffset? Delivered { get; private set; } = null;
+        public string? DeliverTo { get; set; }
+        public DateTimeOffset? Delivered { get; set; } = null;
         public DateOnly To { get; init; }
-        public DateTimeOffset? LastUpdate { get; private set; }
+        public DateTimeOffset? LastUpdate { get; set; }
+        public bool IsCancelled { get; set; } = false;
+
 
         // Navigation Properties
-        public Guid UserId { get; init; }
-        public User User { get; init; } = null!;
-        public ICollection<Meal> Meals { get; init; } = [];
+        public Guid UserId { get; set; }
+        public User User { get; set; } = null!;
+        public ICollection<OrderMeal> Meals { get; set; } = [];
 
         private Order() {}
 

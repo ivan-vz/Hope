@@ -13,7 +13,8 @@ namespace Hope.Application.Extensions
                 Name = meal.Name,
                 Description = meal.Description,
                 Price = meal.Price,
-                ImageUrl = meal.ImageUrl
+                ImageUrl = meal.ImageUrl,
+                Tags = [..meal.Tags.Select(x => x.Name)]
             };
         }
     }
