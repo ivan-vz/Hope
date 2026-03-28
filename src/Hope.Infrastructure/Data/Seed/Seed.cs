@@ -1,6 +1,7 @@
 ﻿using Hope.Domain.Models;
 using Hope.Domain.Models.Auxiliary;
 using Hope.Infrastructure.Data.Seed.DTOs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
@@ -8,11 +9,12 @@ namespace Hope.Infrastructure.Data.Seed
 {
     public class Seed
     {
-        public static async Task SeedAll(ApplicationDbContext context)
+        public static async Task SeedAll(ApplicationDbContext context, UserManager<User> userManager, RoleManager<IdentityRole<Guid>> roleManager)
         {
+            await SeedRoles(roleManager);
             var tags = await SeedTags(context);
             var meals = await SeedMeals(context, tags);
-            var users = await SeedUsers(context);
+            var users = await SeedUsers(userManager);
             await SeedMenus(context, meals);
             await SeedOrders(context, users, meals);
         }
@@ -80,11 +82,11 @@ namespace Hope.Infrastructure.Data.Seed
             return meals;
         }
 
-        private static async Task<List<User>> SeedUsers(ApplicationDbContext context)
+        private static async Task<List<User>> SeedUsers(UserManager<User> userManager)
         {
             var users = new List<User>();
             
-            if (await context.Users.AnyAsync()) return users;
+            if (await userManager.Users.AnyAsync()) return users;
 
             var data = await File.ReadAllTextAsync("Data/Seed/Data/UserSeedData.json");
             var usersData = JsonSerializer.Deserialize<List<User>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -97,12 +99,26 @@ namespace Hope.Infrastructure.Data.Seed
 
             foreach (var user in usersData) 
             {
-                var u = new User(user.Name, user.Surname, user.Email, user.PhoneNumber, user.Address);
-                context.Users.Add(u);
+                var u = new User(user.Name, user.Surname!, user.Email!, user.PhoneNumber!, user.Address);
+                var result = await userManager.CreateAsync(u, "Pa$$w0rd");
+                if (!result.Succeeded)
+                {
+                    Console.WriteLine(result.Errors.First().Description);
+                    continue;
+                }
+
+                await userManager.AddToRoleAsync(u, "User");
+
                 users.Add(u);
             }
 
-            await context.SaveChangesAsync();
+            var chef = new User("chef", "Ratatouille", "chef@test.com", "+598 97 982 756", null);
+            var resultChef = await userManager.CreateAsync(chef, "Pa$$w0rd");
+            if (resultChef.Succeeded) await userManager.AddToRoleAsync(chef, "Chef");
+
+            var admin = new User("admin", null, "admin@test.com", "+598 98 123 456", null);
+            var resultAdmin = await userManager.CreateAsync(admin, "Pa$$w0rd");
+            if (resultAdmin.Succeeded) await userManager.AddToRoleAsync(admin, "Admin");
 
             return users;
         }
@@ -193,6 +209,19 @@ namespace Hope.Infrastructure.Data.Seed
             }
 
             await context.SaveChangesAsync();
+        }
+
+        private static async Task SeedRoles(RoleManager<IdentityRole<Guid>> roleManager)
+        {
+            var roles = new[] { "Admin", "User", "Chef" };
+
+            foreach (var role in roles)
+            {
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+                }
+            }
         }
     }
 }

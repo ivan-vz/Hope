@@ -1,4 +1,5 @@
 ﻿using Hope.Application.DTOs.Detail;
+using Hope.Application.DTOs.Login;
 using Hope.Domain.Models;
 
 namespace Hope.Application.Extensions
@@ -11,11 +12,23 @@ namespace Hope.Application.Extensions
             {
                 Id = user.Id,
                 Name = user.Name,
-                Surname = user.Surname,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
+                Surname = user.Surname!,
+                Email = user.Email!,
+                PhoneNumber = user.PhoneNumber!,
                 Address = user.Address,
                 Created = user.Created,
+            };
+        }
+
+        public static LoggedDto ToLoggedDto(this User user, string token) 
+        {
+            return new LoggedDto
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email!,
+                ImageUrl = user.ImageUrl,
+                Token = token
             };
         }
     }

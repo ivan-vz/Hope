@@ -1,4 +1,5 @@
 ﻿using Hope.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hope.API.Controllers
@@ -9,12 +10,15 @@ namespace Hope.API.Controllers
     {
         private readonly ITagService _tagService = tagService;
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<string>>> GetAll(CancellationToken ct) => Ok(await _tagService.GetAllAsync(ct));
 
+        [Authorize]
         [HttpGet("active")]
         public async Task<ActionResult<IReadOnlyList<string>>> GetAllActive(CancellationToken ct) => Ok(await _tagService.GetAllActiveAsync(ct));
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] string name, CancellationToken ct)
         {
@@ -23,6 +27,7 @@ namespace Hope.API.Controllers
             return (validation.IsValid) ? NoContent() : BadRequest(validation.ToDictionary());
         }
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpDelete]
         public async Task<ActionResult> Delete([FromQuery] string name, CancellationToken ct)
         {

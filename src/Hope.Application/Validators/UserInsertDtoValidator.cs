@@ -15,6 +15,7 @@ namespace Hope.Application.Validators
                 .MaximumLength(100)
                 .EmailAddress()
                 .MustAsync( async (email, ct) => !await uow.UserRepository.ExistsByEmailAsync(email, ct)).WithMessage("Invalid Email");
+            RuleFor(x => x.Password).NotEmpty().MinimumLength(6);
             RuleFor(x => x.PhoneNumber)
                 .NotEmpty()
                 .MaximumLength(15)

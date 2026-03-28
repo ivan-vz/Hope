@@ -2,6 +2,7 @@
 using Hope.Application.DTOs.Insert;
 using Hope.Application.DTOs.Update;
 using Hope.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hope.API.Controllers
@@ -12,9 +13,11 @@ namespace Hope.API.Controllers
     {
         private readonly IMealService _mealService = mealService;
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<MealDto>>> GetAll(CancellationToken ct) => Ok(await _mealService.GetAllAsync(ct));
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<MealDto>> GetById(Guid id, CancellationToken ct)
         {
@@ -23,10 +26,12 @@ namespace Hope.API.Controllers
             return (meal is null) ? NotFound() : Ok(meal);
         }
 
+        [Authorize]
         [HttpGet("by-tags")]
         public async Task<ActionResult<IReadOnlyList<MealDto>>> GetByTags([FromBody] ICollection<string> tags, CancellationToken ct) => 
             Ok(await _mealService.GetByTagsAsync(tags, ct));
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpPost]
         public async Task<ActionResult<MealDto>> Create(MealInsertDto dtInser, CancellationToken ct)
         {
@@ -35,6 +40,7 @@ namespace Hope.API.Controllers
             return (dt is null) ? BadRequest(validation.ToDictionary()) : CreatedAtAction(nameof(GetById), new { id = dt!.Id }, dt);
         }
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken ct)
         {
@@ -43,6 +49,7 @@ namespace Hope.API.Controllers
             return (validation.IsValid) ? NoContent() : BadRequest(validation.ToDictionary());
         }
 
+        [Authorize(Roles = "Admin, Chef")]
         [HttpPut]
         public async Task<ActionResult<MealDto>> Update(MealUpdateDto dtUpdate, CancellationToken ct)
         {

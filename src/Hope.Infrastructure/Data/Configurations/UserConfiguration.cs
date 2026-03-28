@@ -11,7 +11,7 @@ namespace Hope.Infrastructure.Data.Configurations
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.Name).HasMaxLength(60).IsRequired();
-            builder.Property(x => x.Surname).HasMaxLength(60).IsRequired();
+            builder.Property(x => x.Surname).HasMaxLength(60);
             builder.Property(x => x.Email).HasMaxLength(100).IsRequired();
             builder.Property(x => x.PhoneNumber).HasMaxLength(15).IsRequired();
             builder.Property(x => x.Address).HasMaxLength(256);
