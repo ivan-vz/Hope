@@ -1,4 +1,5 @@
 using FluentValidation;
+using Hope.API.Middleware;
 using Hope.Application.Interfaces;
 using Hope.Application.Services;
 using Hope.Application.Validators;
@@ -63,6 +64,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
