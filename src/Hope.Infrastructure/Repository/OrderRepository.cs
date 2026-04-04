@@ -14,6 +14,9 @@ namespace Hope.Infrastructure.Repository
             .Include(x => x.Meals).ThenInclude(om => om.Meal).ThenInclude(m => m.Tags)
             .Where(x => x.To == date).ToListAsync(ct);
 
+        public async Task<IReadOnlyList<Order>> GetAllByMonthAsync(Guid userId, DateOnly date, CancellationToken ct) =>
+            await context.Orders.Where(x => x.UserId == userId && x.To.Month == date.Month && x.To.Year == date.Year).OrderBy(x => x.To).ToListAsync(ct);
+
         public async Task<IReadOnlyList<Order>> GetAllByUserAsync(Guid userId, CancellationToken ct) => 
             await context.Orders.Include(x => x.User)
             .Include(x => x.Meals).ThenInclude(om => om.Meal).ThenInclude(m => m.Tags)

@@ -2,12 +2,14 @@
 using FluentValidation.Results;
 using Hope.Application.DTOs.Detail;
 using Hope.Application.DTOs.Insert;
+using Hope.Application.DTOs.Records;
 using Hope.Application.DTOs.Update;
 using Hope.Application.Extensions;
 using Hope.Application.Interfaces;
 using Hope.Domain.Models;
 using Hope.Domain.Models.Auxiliary;
 using Hope.Infrastructure.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hope.Application.Services
 {
@@ -94,6 +96,9 @@ namespace Hope.Application.Services
 
         public async Task<IReadOnlyList<OrderDto>> GetAllByDateAsync(DateOnly date, CancellationToken ct) => 
             [..(await _uow.OrderRepository.GetAllByDateAsync(date, ct)).Select(x => x.ToDto())];
+
+        public async Task<IReadOnlyList<OrderTo>> GetAllByMonthAsync(Guid userId, DateOnly date, CancellationToken ct) =>
+            [.. (await _uow.OrderRepository.GetAllByMonthAsync(userId, date, ct)).Select(x => new OrderTo(x.Id, x.To))];
 
         public async Task<IReadOnlyList<OrderDto>> GetAllByUserAsync(Guid userId, CancellationToken ct) =>
             [.. (await _uow.OrderRepository.GetAllByUserAsync(userId, ct)).Select(x => x.ToDto())];
