@@ -7,5 +7,7 @@ namespace Hope.Application.DTOs.Update
         public required Guid Id { get; init; }
         public bool Delivery { get; init; }
         public ICollection<MealItem> Meals { get; init; } = [];
+        public string? Address { get; set; }
+        public string? Message { get; set; }
     }
 }

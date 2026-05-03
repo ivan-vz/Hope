@@ -8,11 +8,12 @@ namespace Hope.Application.Interfaces
 {
     public interface IOrderService
     {
-        public Task<(OrderDto?, ValidationResult)> CreateAsync(OrderInsertDto dtInsert, CancellationToken ct);
+        public Task<(OrderDto?, ValidationResult)> CreateAsync(Guid userId, OrderInsertDto dtInsert, CancellationToken ct);
         public Task<IReadOnlyList<OrderDto>> GetAllByUserAsync(Guid userId, CancellationToken ct);
         public Task<IReadOnlyList<OrderDto>> GetAllByDateAsync(DateOnly date, CancellationToken ct);
         public Task<IReadOnlyList<OrderTo>> GetAllByMonthAsync(Guid userId, DateOnly date, CancellationToken ct);
         public Task<OrderDto?> GetByIdAsync(Guid id, CancellationToken ct);
+        public Task<OrderForUpdateDto?> GetForUpdateAsync(Guid id, CancellationToken ct);
         public Task<ValidationResult> DeleteAsync(Guid id, CancellationToken ct);
         public Task<(OrderDto?, ValidationResult)> UpdateAsync(OrderUpdateDto dtUpdate, CancellationToken ct);
     }

@@ -1,4 +1,5 @@
-﻿using Hope.Application.DTOs.Detail;
+﻿using Hope.API.Extensions;
+using Hope.Application.DTOs.Detail;
 using Hope.Application.DTOs.Insert;
 using Hope.Application.DTOs.Update;
 using Hope.Application.Interfaces;
@@ -31,11 +32,22 @@ namespace Hope.API.Controllers
             return (order is null) ? NotFound() : Ok(order);
         }
 
+        [Authorize]
+        [HttpGet("{id}/update")]
+        public async Task<ActionResult<OrderForUpdateDto>> GetForUpdate(Guid id, CancellationToken ct)
+        {
+            var order = await _orderService.GetForUpdateAsync(id, ct);
+            return (order is null) ? NotFound() : Ok(order);
+        }
+
         [Authorize(Roles = "Admin, User")]
         [HttpPost]
         public async Task<ActionResult<OrderDto>> Create(OrderInsertDto insertDto, CancellationToken ct)
         {
-            var (dt, validation) = await _orderService.CreateAsync(insertDto, ct);
+            var (userId, tokenValidation) = User.GetUserId();
+            if (!tokenValidation.IsValid) return BadRequest(tokenValidation.ToDictionary());
+
+            var (dt, validation) = await _orderService.CreateAsync(userId, insertDto, ct);
             return (dt is null) ? BadRequest(validation.ToDictionary()) : CreatedAtAction(nameof(GetById), new { id = dt!.Id }, dt);
         }
 

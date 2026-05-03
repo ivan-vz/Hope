@@ -182,7 +182,7 @@ namespace Hope.Infrastructure.Data.Seed
                     continue;
                 }
                 
-                var order = new Order(od.Total, user.Id, od.DeliverTo, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(od.DaysUntilDelivery)));
+                var order = new Order(od.Total, user.Id, od.Address, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(od.DaysUntilDelivery)), od.Message);
 
                 foreach (var mealItem in od.Meals)
                 {

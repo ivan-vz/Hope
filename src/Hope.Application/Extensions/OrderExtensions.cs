@@ -1,4 +1,5 @@
 ﻿using Hope.Application.DTOs.Detail;
+using Hope.Application.DTOs.Records;
 using Hope.Domain.Models;
 
 namespace Hope.Application.Extensions
@@ -12,10 +13,21 @@ namespace Hope.Application.Extensions
                 Id = order.Id,
                 Total = order.Total,
                 Created = order.Created,
-                DeliverTo = order.DeliverTo,
-                Delivered = order.Delivered,
+                Address = order.Address,
+                Message = order.Message,
                 User = order.User.ToDto(),
                 Meals = [.. order.Meals.Select(x => x.Meal.ToDto())]
+            };
+        }
+
+        public static OrderForUpdateDto ToUpdateDto(this Order order, string officeAddress)
+        {
+            return new OrderForUpdateDto
+            {
+                Delivery = order.Address != officeAddress,
+                Address = (order.Address != officeAddress) ? order.Address : null,
+                Message = (order.Address != officeAddress) ? order.Message : null,
+                Meals = [.. order.Meals.Select(x => new MealItem(x.MealId, x.Quantity))]
             };
         }
     }

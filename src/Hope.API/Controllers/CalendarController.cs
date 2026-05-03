@@ -1,8 +1,8 @@
-﻿using Hope.Application.DTOs.Detail;
+﻿using Hope.API.Extensions;
+using Hope.Application.DTOs.Detail;
 using Hope.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Hope.API.Controllers
 {
@@ -17,7 +17,8 @@ namespace Hope.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DayRecord>>> GetByMonth([FromQuery] DateOnly date, CancellationToken ct)
         {
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var (userId, tokenValidation) = User.GetUserId();
+            if (!tokenValidation.IsValid) return BadRequest(tokenValidation.ToDictionary());
 
             var (days, validation) = await _calendarService.GetAllByDate(userId, date, ct);
 

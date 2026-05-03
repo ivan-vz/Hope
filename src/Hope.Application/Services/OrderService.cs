@@ -9,25 +9,26 @@ using Hope.Application.Interfaces;
 using Hope.Domain.Models;
 using Hope.Domain.Models.Auxiliary;
 using Hope.Infrastructure.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.Extensions.Configuration;
 
 namespace Hope.Application.Services
 {
-    public class OrderService(IUnitOfWork uow, IValidator<OrderInsertDto> insertValidator, IValidator<OrderUpdateDto> updateValidator) : IOrderService
+    public class OrderService(IUnitOfWork uow, IValidator<OrderInsertDto> insertValidator, IValidator<OrderUpdateDto> updateValidator, IConfiguration configuration) : IOrderService
     {
         private readonly IUnitOfWork _uow = uow;
         private readonly IValidator<OrderInsertDto> _insertValidator = insertValidator;
         private readonly IValidator<OrderUpdateDto> _updateValidator = updateValidator;
+        private readonly IConfiguration _configuration = configuration;
 
-        public async Task<(OrderDto?, ValidationResult)> CreateAsync(OrderInsertDto dtInsert, CancellationToken ct)
+        public async Task<(OrderDto?, ValidationResult)> CreateAsync(Guid userId, OrderInsertDto dtInsert, CancellationToken ct)
         {
             var validation = await _insertValidator.ValidateAsync(dtInsert, ct);
             if (!validation.IsValid) return (null, validation);
 
-            var user = await _uow.UserRepository.GetByIdAsync(dtInsert.UserId, ct);
+            var user = await _uow.UserRepository.GetByIdAsync(userId, ct);
             if (user is null)
             {
-                validation.Errors.Add(new ValidationFailure("User", $"User with id {dtInsert.UserId} not found"));
+                validation.Errors.Add(new ValidationFailure("User", $"User with id {userId} not found"));
                 return (null, validation);
             }
 
@@ -50,9 +51,10 @@ namespace Hope.Application.Services
 
             var order = new Order(
                 total, 
-                user.Id, 
-                (dtInsert.Delivery) ? user.Address : null, 
-                dtInsert.To
+                user.Id,
+                !dtInsert.Delivery ? _configuration["OfficeAddress"]! : dtInsert.Address!, 
+                dtInsert.To,
+                dtInsert.Message
                 );
 
             order.User = user;
@@ -105,6 +107,8 @@ namespace Hope.Application.Services
 
         public async Task<OrderDto?> GetByIdAsync(Guid id, CancellationToken ct) => (await _uow.OrderRepository.GetByIdAsync(id, ct))?.ToDto();
 
+        public async Task<OrderForUpdateDto?> GetForUpdateAsync(Guid id, CancellationToken ct) => (await _uow.OrderRepository.GetByIdAsync(id, ct))?.ToUpdateDto(_configuration["OfficeAddress"]!);
+
         public async Task<(OrderDto?, ValidationResult)> UpdateAsync(OrderUpdateDto dtUpdate, CancellationToken ct)
         {
             var validation = await _updateValidator.ValidateAsync(dtUpdate, ct);
@@ -146,7 +150,8 @@ namespace Hope.Application.Services
             }
             
             order.LastUpdate = DateTimeOffset.UtcNow;
-            order.DeliverTo = (dtUpdate.Delivery) ? order.User.Address : null;
+            order.Address = !dtUpdate.Delivery ? _configuration["OfficeAddress"]! : dtUpdate.Address!;
+            order.Message = dtUpdate.Message;
 
             await _uow.Complete();
 

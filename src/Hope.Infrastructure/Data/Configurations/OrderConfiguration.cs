@@ -12,8 +12,8 @@ namespace Hope.Infrastructure.Data.Configurations
 
             builder.Property(x => x.Total).HasPrecision(10, 2).IsRequired();
             builder.Property(x => x.Created).IsRequired();
-            builder.Property(x => x.DeliverTo).HasMaxLength(200);
-            builder.Property(x => x.Delivered);
+            builder.Property(x => x.Address).HasMaxLength(200);
+            builder.Property(x => x.Message).HasMaxLength(200);
             builder.Property(x => x.To).IsRequired();
             builder.Property(x => x.LastUpdate);
             builder.Property(x => x.IsCancelled).IsRequired();

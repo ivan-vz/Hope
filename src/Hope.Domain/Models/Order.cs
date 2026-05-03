@@ -7,10 +7,10 @@ namespace Hope.Domain.Models
         public Guid Id { get; init; } = Guid.NewGuid();
         public decimal Total { get; set; }
         public DateTimeOffset Created { get; init; } = DateTimeOffset.UtcNow;
-        public string? DeliverTo { get; set; }
-        public DateTimeOffset? Delivered { get; set; } = null;
+        public string Address { get; set; } = null!;
         public DateOnly To { get; init; }
         public DateTimeOffset? LastUpdate { get; set; }
+        public string? Message { get; set; } = null!;
         public bool IsCancelled { get; set; } = false;
 
 
@@ -21,12 +21,13 @@ namespace Hope.Domain.Models
 
         private Order() {}
 
-        public Order(decimal total, Guid userId, string? address, DateOnly to)
+        public Order(decimal total, Guid userId, string address, DateOnly to, string? message)
         {
             Total = total;
             UserId = userId;
-            DeliverTo = address;
+            Address = address;
             To = to;
+            Message = message;
         }
     }
 }
